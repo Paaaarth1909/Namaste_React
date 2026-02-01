@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import RestaurantCard from "./RestaurantCard";
-import resList from "../utils/mockData";
 import type { Restaurant } from "../utils/Types";
 import Shimmer from "./shimmer";
 
@@ -18,7 +17,7 @@ const Body = () => {
   const fetchData = async () => {
     try {
       const response = await fetch(
-        "https://namastedev.com/api/v1/listRestaurants",
+        "https://corsproxy.io/?https://www.swiggy.com/dapi/restaurants/list/v5?lat=12.9351929&lng=77.62448069999999",
       );
 
       const json = await response.json();
@@ -30,8 +29,9 @@ const Body = () => {
       setListOfRestaurants(restaurants || []);
       setFilteredRestaurants(restaurants || []);
     } catch (error) {
-      setListOfRestaurants(resList);
-      setFilteredRestaurants(resList);
+      console.error("API failed", error);
+      setListOfRestaurants([]);
+      setFilteredRestaurants([]);
     }
   };
 
@@ -52,7 +52,7 @@ const Body = () => {
           <button
             onClick={() => {
               const filtered = listOfRestaurants.filter((res) =>
-                res.data.name.toLowerCase().includes(searchText.toLowerCase()),
+                res.info.name.toLowerCase().includes(searchText.toLowerCase()),
               );
               setFilteredRestaurants(filtered);
             }}
@@ -64,9 +64,11 @@ const Body = () => {
         <button
           className="filter-btn"
           onClick={() => {
-            const filtered = listOfRestaurants.filter(
-              (res) => parseFloat(res.data.avgRating) > 4,
-            );
+            const filtered = listOfRestaurants.filter((res) => {
+              const rating = Number(res.info.avgRatingString);
+              return !isNaN(rating) && rating > 4.5;
+            });
+
             setFilteredRestaurants(filtered);
           }}
         >
@@ -76,7 +78,7 @@ const Body = () => {
 
       <div className="res-container">
         {filteredRestaurants.map((restaurant, info) => (
-          <RestaurantCard key={restaurant.data.id} resData={restaurant} />
+          <RestaurantCard key={restaurant.info.id} resData={restaurant} />
         ))}
       </div>
     </div>

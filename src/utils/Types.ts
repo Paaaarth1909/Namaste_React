@@ -1,16 +1,14 @@
-export interface RestaurantInfo {
-  id: string;
-  name: string;
-  cloudinaryImageId: string;
-  cuisines: string[];
-  costForTwo: number;
-  deliveryTime: number;
-  avgRating: string;
-  totalRatings: number;
-}
-
 export interface Restaurant {
-  type: string;
-  data: RestaurantInfo;
-  subtype: string;
+  info: {
+    id: string;
+    name: string;
+    avgRating?: number;
+    avgRatingString: string;
+    cuisines: string[];
+    costForTwo: string;
+    sla: {
+      deliveryTime: number;
+    };
+    cloudinaryImageId: string;
+  };
 }

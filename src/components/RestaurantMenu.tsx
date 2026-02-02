@@ -12,9 +12,19 @@ const RestaurantMenu = () => {
   }, []);
 
   const fetchMenu = async () => {
-    const data = await fetch(MENU_API + resId);
-    const json = await data.json();
-    setResInfo(json.data);
+    try {
+      const response = await fetch(MENU_API + resId);
+      console.log("MENU STATUS:", response.status);
+
+      if (!response.ok) {
+        throw new Error("Menu fetch failed");
+      }
+
+      const json = await response.json();
+      setResInfo(json.data);
+    } catch (error) {
+      console.error("Menu API error:", error);
+    }
   };
 
   if (resInfo === null) return <Shimmer />;
@@ -38,8 +48,7 @@ const RestaurantMenu = () => {
         {itemCards.map((item: any) => (
           <li key={item.card.info.id}>
             {item.card.info.name} – ₹
-            {(item.card.info.price ||
-              item.card.info.defaultPrice) / 100}
+            {(item.card.info.price || item.card.info.defaultPrice) / 100}
           </li>
         ))}
       </ul>

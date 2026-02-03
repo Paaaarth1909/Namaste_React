@@ -24,7 +24,7 @@ class About extends Component {
         {/* <User name="Akshay (function)" /> */}
 
         {/* Class */}
-        <UserClass name="First" location="Dehradun Class" />
+        <UserClass name="First" location="Gurugram Class" />
       </div>
     );
   }

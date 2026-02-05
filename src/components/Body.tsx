@@ -1,87 +1,46 @@
 import { useEffect, useState } from "react";
 import RestaurantCard from "./RestaurantCard";
-import type { Restaurant } from "../utils/Types";
 import Shimmer from "./shimmer";
 import { Link } from "react-router-dom";
+import { RESTAURANT_LIST_API } from "../utils/constants";
+import useOnlineStatus from "../utils/useOnlineStatus";
 
 const Body = () => {
-  const [listOfRestaurants, setListOfRestaurants] = useState<Restaurant[]>([]);
-  const [filteredRestaurants, setFilteredRestaurants] = useState<Restaurant[]>(
-    [],
-  );
-  const [searchText, setSearchText] = useState("");
+  const [listOfRestaurants, setListOfRestaurants] = useState<any[]>([]);
+  const [filteredRestaurant, setFilteredRestaurant] = useState<any[]>([]);
+
+  const onlineStatus = useOnlineStatus();
 
   useEffect(() => {
     fetchData();
   }, []);
 
   const fetchData = async () => {
-    try {
-      const response = await fetch(
-        "https://corsproxy.io/?https://www.swiggy.com/dapi/restaurants/list/v5?lat=12.9351929&lng=77.62448069999999",
-      );
+    const data = await fetch(RESTAURANT_LIST_API);
+    const json = await data.json();
 
-      const json = await response.json();
+    const restaurants =
+      json?.data?.cards?.[2]?.data?.data?.cards ||
+      json?.data?.cards?.[1]?.data?.data?.cards ||
+      [];
 
-      const restaurants =
-        json?.data?.cards[1]?.card?.card?.gridElements?.infoWithStyle
-          ?.restaurants;
-
-      setListOfRestaurants(restaurants || []);
-      setFilteredRestaurants(restaurants || []);
-    } catch (error) {
-      console.error("API failed", error);
-      setListOfRestaurants([]);
-      setFilteredRestaurants([]);
-    }
+    setListOfRestaurants(restaurants);
+    setFilteredRestaurant(restaurants);
   };
 
-  if (listOfRestaurants.length === 0) {
-    return <Shimmer />;
+  if (onlineStatus === false) {
+    return <h1>You are offline 🚫</h1>;
   }
 
-  return (
+  return listOfRestaurants.length === 0 ? (
+    <Shimmer />
+  ) : (
     <div className="body">
-      <div className="filter">
-        <div className="search">
-          <input
-            className="search-box"
-            type="text"
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-          />
-          <button
-            onClick={() => {
-              const filtered = listOfRestaurants.filter((res) =>
-                res.info.name.toLowerCase().includes(searchText.toLowerCase()),
-              );
-              setFilteredRestaurants(filtered);
-            }}
-          >
-            Search
-          </button>
-        </div>
-
-        <button
-          className="filter-btn"
-          onClick={() => {
-            const filtered = listOfRestaurants.filter((res) => {
-              const rating = Number(res.info.avgRatingString);
-              return !isNaN(rating) && rating > 4.5;
-            });
-
-            setFilteredRestaurants(filtered);
-          }}
-        >
-          Top Rated Restaurants
-        </button>
-      </div>
-
       <div className="res-container">
-        {filteredRestaurants.map((restaurant) => (
+        {filteredRestaurant.map((restaurant: any) => (
           <Link
-            key={restaurant.info.id}
-            to={`/restaurants/${restaurant.info.id}`}
+            key={restaurant.data.id}
+            to={`/restaurants/${restaurant.data.id}`}
           >
             <RestaurantCard resData={restaurant} />
           </Link>

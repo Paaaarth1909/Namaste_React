@@ -1,37 +1,50 @@
-import { LOGO_URL } from "../utils/constants";
-import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import { LOGO_URL } from "../utils/constants";
+import useOnlineStatus from "../utils/useOnlineStatus";
 
 const Header = () => {
-  const [btnName, setBtnName] = useState<"Login" | "Logout">("Login");
+  const [btnName, setBtnName] = useState("Login");
+  const onlineStatus = useOnlineStatus();
 
   return (
-    <div className="header">
-      <div className="logo-container">
-        <img className="logo" src={LOGO_URL} alt="App Logo" />
+    <div className="flex justify-between items-center px-6 py-3 bg-pink-100 shadow-lg">
+      {/* Logo */}
+      <div>
+        <img className="w-24" src={LOGO_URL} alt="App Logo" />
       </div>
 
-      <div className="nav-items">
-        <ul>
-          <li>
-            <Link to="/">Home</Link>
-          </li>
-          <li>
-            <Link to="/about">About Us</Link>
-          </li>
-          <li>
-            <Link to="/contact">Contact Us</Link>
-          </li>
+      {/* Navigation */}
+      <ul className="flex items-center gap-6">
+        <li>Online Status: {onlineStatus ? "🟢" : "🔴"}</li>
 
-          <li>Cart</li>
+        <li>
+          <Link to="/">Home</Link>
+        </li>
+
+        <li>
+          <Link to="/about">About</Link>
+        </li>
+
+        <li>
+          <Link to="/contact">Contact</Link>
+        </li>
+
+        <li>
+          <Link to="/grocery">Grocery</Link>
+        </li>
+
+        <li>Cart</li>
+
+        <li>
           <button
-            className="login"
+            className="px-4 py-1 border border-black rounded-lg bg-white"
             onClick={() => setBtnName(btnName === "Login" ? "Logout" : "Login")}
           >
             {btnName}
           </button>
-        </ul>
-      </div>
+        </li>
+      </ul>
     </div>
   );
 };

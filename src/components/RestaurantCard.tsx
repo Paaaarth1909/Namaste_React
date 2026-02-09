@@ -1,22 +1,25 @@
 import { CDN_URL } from "../utils/constants";
-import type { Restaurant } from "../utils/Types";
 
-interface RestaurantCardProps {
-  resData: Restaurant;
-}
-
-const RestaurantCard = ({ resData }: RestaurantCardProps) => {
-  const { cloudinaryImageId, name, avgRating, cuisines, costForTwo, sla } =
-    resData.info;
+const RestaurantCard = ({ resData }: any) => {
+  const {
+    name,
+    cuisines,
+    avgRating,
+    costForTwo,
+    cloudinaryImageId,
+  } = resData.info;
 
   return (
-    <div className="res-card" style={{ backgroundColor: "#f0f0f0" }}>
-      <img className="res-logo" alt={name} src={CDN_URL + cloudinaryImageId} />
-      <h3>{name}</h3>
-      <h4>{cuisines.join(", ")}</h4>
-      <h4>{avgRating} stars</h4>
-      <h4>{costForTwo}</h4>
-      <h4>{sla.deliveryTime} minutes</h4>
+    <div className="w-64 p-4 rounded-lg bg-gray-100 hover:bg-gray-200">
+      <img
+        className="w-full h-40 object-cover rounded"
+        src={CDN_URL + cloudinaryImageId}
+        alt={name}
+      />
+      <h3 className="font-bold text-lg mt-2">{name}</h3>
+      <p className="text-sm text-gray-600">{cuisines.join(", ")}</p>
+      <p className="text-sm">⭐ {avgRating}</p>
+      <p className="text-sm">{costForTwo}</p>
     </div>
   );
 };

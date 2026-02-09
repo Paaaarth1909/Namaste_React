@@ -1,49 +1,88 @@
 import { useEffect, useState } from "react";
 import RestaurantCard from "./RestaurantCard";
 import Shimmer from "./shimmer";
-import { Link } from "react-router-dom";
 import { RESTAURANT_LIST_API } from "../utils/constants";
-import useOnlineStatus from "../utils/useOnlineStatus";
 
 const Body = () => {
-  const [listOfRestaurants, setListOfRestaurants] = useState<any[]>([]);
-  const [filteredRestaurant, setFilteredRestaurant] = useState<any[]>([]);
-
-  const onlineStatus = useOnlineStatus();
+  const [restaurants, setRestaurants] = useState<any[]>([]);
+  const [filteredRestaurants, setFilteredRestaurants] = useState<any[]>([]);
+  const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
     fetchData();
   }, []);
 
   const fetchData = async () => {
-    const data = await fetch(RESTAURANT_LIST_API);
-    const json = await data.json();
+    try {
+      const data = await fetch(RESTAURANT_LIST_API);
+      const json = await data.json();
 
-    const restaurants =
-      json?.data?.cards?.[2]?.data?.data?.cards ||
-      json?.data?.cards?.[1]?.data?.data?.cards ||
-      [];
+      const resList =
+        json?.data?.cards[4]?.card?.card?.gridElements?.infoWithStyle
+          ?.restaurants;
 
-    setListOfRestaurants(restaurants);
-    setFilteredRestaurant(restaurants);
+      setRestaurants(resList);
+      setFilteredRestaurants(resList);
+    } catch (err) {
+      console.error("API error:", err);
+    }
   };
 
-  if (onlineStatus === false) {
-    return <h1>You are offline 🚫</h1>;
+  // 🔍 Search
+  const handleSearch = () => {
+    const filtered = restaurants.filter((res) =>
+      res.info.name.toLowerCase().includes(searchText.toLowerCase())
+    );
+    setFilteredRestaurants(filtered);
+  };
+
+  // ⭐ Top Rated
+  const handleTopRated = () => {
+    const filtered = restaurants.filter(
+      (res) => res.info.avgRating > 4
+    );
+    setFilteredRestaurants(filtered);
+  };
+
+  // ⏳ SHIMMER
+  if (restaurants.length === 0) {
+    return <Shimmer />;
   }
 
-  return listOfRestaurants.length === 0 ? (
-    <Shimmer />
-  ) : (
-    <div className="body">
-      <div className="res-container">
-        {filteredRestaurant.map((restaurant: any) => (
-          <Link
-            key={restaurant.data.id}
-            to={`/restaurants/${restaurant.data.id}`}
-          >
-            <RestaurantCard resData={restaurant} />
-          </Link>
+  return (
+    <div className="px-6">
+      {/* Search & Filter */}
+      <div className="flex gap-4 my-6">
+        <input
+          className="border border-gray-400 px-3 py-1 rounded"
+          type="text"
+          placeholder="Search restaurant..."
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+        />
+
+        <button
+          className="px-4 py-1 bg-green-500 text-white rounded"
+          onClick={handleSearch}
+        >
+          Search
+        </button>
+
+        <button
+          className="px-4 py-1 bg-blue-500 text-white rounded"
+          onClick={handleTopRated}
+        >
+          Top Rated
+        </button>
+      </div>
+
+      {/* Restaurant Cards */}
+      <div className="flex flex-wrap gap-6">
+        {filteredRestaurants.map((restaurant) => (
+          <RestaurantCard
+            key={restaurant.info.id}
+            resData={restaurant}
+          />
         ))}
       </div>
     </div>

@@ -20,8 +20,10 @@
   },
   "homepage": "https://github.com/Paaaarth1909/Namaste_React#readme",
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.18",
     "@types/react": "^19.2.10",
     "@types/react-dom": "^19.2.3",
+    "autoprefixer": "^10.4.24",
     "parcel": "^2.16.3",
     "postcss": "^8.5.6",
     "process": "^0.11.10",
@@ -34,7 +36,7 @@
     "react-router": "^6.11.2",
     "react-router-dom": "^6.11.2"
   },
-  "browserlist": [
+  "browserslist": [
     "last 2 Chrome version"
   ]
 }

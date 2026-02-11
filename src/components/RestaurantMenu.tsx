@@ -1,36 +1,52 @@
 import { useParams } from "react-router-dom";
 import Shimmer from "./shimmer";
 import useRestaurantMenu from "../utils/useRestaurantMenu";
+import RestaurantCategory from "./RestaurantCategory";
 
 const RestaurantMenu = () => {
-  const { resId } = useParams<{ resId: string }>();
+  const { resId } = useParams();
 
-  const resInfo = useRestaurantMenu(resId!);
+  const resInfo = useRestaurantMenu(resId);
 
   if (resInfo === null) return <Shimmer />;
 
-  const { name, cuisines, costForTwoMessage } =
-    resInfo?.cards?.[0]?.card?.card?.info || {};
+  const restaurantInfo = resInfo?.cards
+    ?.map((c: any) => c?.card?.card?.info)
+    ?.find((info: any) => info?.name);
 
-  const itemCards =
-    resInfo?.cards?.[2]?.groupedCard?.cardGroupMap?.REGULAR?.cards?.[1]?.card
-      ?.card?.itemCards || [];
+  const regularCards = resInfo?.cards?.find((c: any) => c?.groupedCard)
+    ?.groupedCard?.cardGroupMap?.REGULAR?.cards;
+
+  const menuItems = regularCards
+    ?.filter((c: any) => c?.card?.card?.itemCards)
+    ?.flatMap((c: any) => c.card.card.itemCards);
+
+  // console.log(regularCards);
+
+  const categories = regularCards?.filter(
+    (c: any) =>
+      c.card?.card?.["@type"] ==
+      "type.googleapis.com/swiggy.presentation.food.v2.ItemCategory",
+  );
+  // console.log(categories);
+
+  const { name, cuisines, costForTwoMessage } = restaurantInfo || {};
 
   return (
-    <div className="menu">
-      <h1>{name}</h1>
-      <p>
+    <div className="menu text-center">
+      <h1 className="font-bold my-6 text-2xl">{name}</h1>
+      <p className="font-bold text-lg">
         {cuisines?.join(", ")} - {costForTwoMessage}
       </p>
-
-      <h2>Menu</h2>
-      <ul>
-        {itemCards.map((item: any) => (
-          <li key={item.card.info.id}>
-            {item.card.info.name} - ₹{item.card.info.price / 100}
-          </li>
+      <div>
+        {/* categories accordion */}
+        {categories?.map((category: any) => (
+          <RestaurantCategory
+            key={category?.card?.card?.title}
+            data={category?.card?.card}
+          />
         ))}
-      </ul>
+      </div>
     </div>
   );
 };

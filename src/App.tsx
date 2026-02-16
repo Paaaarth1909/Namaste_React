@@ -6,6 +6,8 @@ import Contact from "./components/Contact";
 import Error from "./components/Error";
 import RestaurantMenu from "./components/RestaurantMenu";
 import "../index.css";
+import { Provider } from "react-redux";
+import appStore from "./utils/appStore";
 
 
 import {
@@ -52,4 +54,9 @@ const appRouter = createBrowserRouter([
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
-root.render(<RouterProvider router={appRouter} />);
+
+root.render(
+  <Provider store={appStore}>
+    <RouterProvider router={appRouter} />
+  </Provider>
+);

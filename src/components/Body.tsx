@@ -4,6 +4,7 @@ import Shimmer from "./shimmer";
 import restaurantData from "../utils/restaurantData.json";
 import RestaurantCard, { withPromotedLabel } from "./RestaurantCard";
 
+
 const Body = () => {
   const [restaurants, setRestaurants] = useState<any[]>([]);
   const [filteredRestaurants, setFilteredRestaurants] = useState<any[]>([]);

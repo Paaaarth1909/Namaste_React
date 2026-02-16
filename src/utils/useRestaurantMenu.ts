@@ -1,21 +1,23 @@
-import { MENU_API } from "../utils/constants";
 import { useEffect, useState } from "react";
 
-// CUSTOM HOOK
-const useRestaurantMenu = (resId?: string) => {
-    const [resInfo, setResInfo] = useState<any>(null)
+const useRestaurantMenu = (resId: string | undefined) => {
+  const [resInfo, setResInfo] = useState<any>(null);
 
-    useEffect(() => {
-        fetchData();
-    }, [resId]);
+  useEffect(() => {
+    if (!resId) return;
+    fetchMenu();
+  }, [resId]);
 
-    const fetchData = async () => {
-        const data = await fetch(MENU_API + resId);
-        const json = await data.json();
+  const fetchMenu = async () => {
+    const data = await fetch(
+      `https://foodfire.onrender.com/api/menu?page-type=REGULAR_MENU&complete-menu=true&lat=21.1702401&lng=72.83106070000001&submitAction=ENTER&restaurantId=${resId}`
+    );
 
-        setResInfo(json.data);
-    }
-    return resInfo;
+    const json = await data.json();
+    setResInfo(json.data);
+  };
 
-}; 
+  return resInfo;
+};
+
 export default useRestaurantMenu;

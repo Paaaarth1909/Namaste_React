@@ -2,9 +2,11 @@ import { CDN_URL } from "../utils/constants";
 import { useDispatch } from "react-redux";
 import { addItem } from "../utils/cartSlice";
 
-const ItemList = ({ items }: any) => {
+interface ItemListProps {
+  items: any[];
+}
 
-  // ✅ Hook must be inside component
+const ItemList: React.FC<ItemListProps> = ({ items }) => {
   const dispatch = useDispatch();
 
   const handleAddItem = (item: any) => {
@@ -15,6 +17,7 @@ const ItemList = ({ items }: any) => {
     <div>
       {items.map((item: any) => (
         <div
+          data-testid="foodItems"
           key={item.card.info.id}
           className="p-2 m-2 border-b border-gray-300 text-left flex justify-between"
         >
@@ -39,11 +42,8 @@ const ItemList = ({ items }: any) => {
           <div className="w-3/12 p-4 relative">
             <img
               src={CDN_URL + item.card.info.imageId}
-              alt="item"
               className="w-full rounded-lg"
             />
-
-            {/* ✅ Add click handler */}
             <button
               onClick={() => handleAddItem(item)}
               className="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-black text-white px-3 py-1 rounded-lg text-sm"

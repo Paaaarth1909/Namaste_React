@@ -1,52 +1,46 @@
-import { useParams } from "react-router-dom";
 import Shimmer from "./shimmer";
+import { useParams } from "react-router-dom";
 import useRestaurantMenu from "../utils/useRestaurantMenu";
 import RestaurantCategory from "./RestaurantCategory";
+import { useState } from "react";
 
 const RestaurantMenu = () => {
   const { resId } = useParams();
 
   const resInfo = useRestaurantMenu(resId);
 
+  const [showIndex, setShowIndex] = useState<number | null>(null);
+
   if (resInfo === null) return <Shimmer />;
 
-  const restaurantInfo = resInfo?.cards
-    ?.map((c: any) => c?.card?.card?.info)
-    ?.find((info: any) => info?.name);
+  const { name, cuisines, costForTwoMessage } =
+    resInfo?.cards[0]?.card?.card?.info;
 
-  const regularCards = resInfo?.cards?.find((c: any) => c?.groupedCard)
-    ?.groupedCard?.cardGroupMap?.REGULAR?.cards;
-
-  const menuItems = regularCards
-    ?.filter((c: any) => c?.card?.card?.itemCards)
-    ?.flatMap((c: any) => c.card.card.itemCards);
-
-  // console.log(regularCards);
-
-  const categories = regularCards?.filter(
-    (c: any) =>
-      c.card?.card?.["@type"] ==
-      "type.googleapis.com/swiggy.presentation.food.v2.ItemCategory",
-  );
-  // console.log(categories);
-
-  const { name, cuisines, costForTwoMessage } = restaurantInfo || {};
+  const categories =
+    resInfo?.cards[2]?.groupedCard?.cardGroupMap?.REGULAR?.cards.filter(
+      (c: any) =>
+        c?.card?.card?.["@type"] ===
+        "type.googleapis.com/swiggy.presentation.food.v2.ItemCategory"
+    );
 
   return (
-    <div className="menu text-center">
-      <h1 className="font-bold my-6 text-2xl">{name}</h1>
-      <p className="font-bold text-lg">
-        {cuisines?.join(", ")} - {costForTwoMessage}
+    <div className="text-center">
+      <h1 className="font-bold text-2xl my-6">{name}</h1>
+      <p className="font-semibold text-lg">
+        {cuisines.join(", ")} - {costForTwoMessage}
       </p>
-      <div>
-        {/* categories accordion */}
-        {categories?.map((category: any) => (
-          <RestaurantCategory
-            key={category?.card?.card?.title}
-            data={category?.card?.card}
-          />
-        ))}
-      </div>
+
+      {/* Categories Accordion */}
+      {categories.map((category: any, index: number) => (
+        <RestaurantCategory
+          key={category?.card?.card?.title}
+          data={category?.card?.card}
+          showItems={index === showIndex}
+          setShowIndex={() =>
+            setShowIndex(index === showIndex ? null : index)
+          }
+        />
+      ))}
     </div>
   );
 };

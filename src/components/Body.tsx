@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import RestaurantCard from "./RestaurantCard";
 import Shimmer from "./shimmer";
 import restaurantData from "../utils/restaurantData.json";
+import RestaurantCard, { withPromotedLabel } from "./RestaurantCard";
 
 const Body = () => {
   const [restaurants, setRestaurants] = useState<any[]>([]);
@@ -17,19 +17,23 @@ const Body = () => {
 
   const handleSearch = () => {
     const filtered = restaurants.filter((res) =>
-      res.info.name.toLowerCase().includes(searchText.toLowerCase()),
+      res.info.name.toLowerCase().includes(searchText.toLowerCase())
     );
     setFilteredRestaurants(filtered);
   };
 
   const handleTopRated = () => {
-    const filtered = restaurants.filter((res) => res.info.avgRating > 4);
+    const filtered = restaurants.filter(
+      (res) => Number(res.info.avgRating) > 4
+    );
     setFilteredRestaurants(filtered);
   };
 
   if (restaurants.length === 0) {
     return <Shimmer />;
   }
+
+  const RestaurantCardPromoted = withPromotedLabel(RestaurantCard);
 
   return (
     <div className="px-6">
@@ -63,7 +67,11 @@ const Body = () => {
             key={restaurant.info.id}
             to={"/restaurants/" + restaurant.info.id}
           >
-            <RestaurantCard resData={restaurant} />
+            {restaurant?.info?.promoted ? (
+              <RestaurantCardPromoted resData={restaurant} />
+            ) : (
+              <RestaurantCard resData={restaurant} />
+            )}
           </Link>
         ))}
       </div>

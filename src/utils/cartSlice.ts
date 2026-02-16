@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface CartState {
-  items: any[];   // you can later replace 'any' with proper Item type
+  items: any[];
 }
 
 const initialState: CartState = {

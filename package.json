@@ -3,11 +3,15 @@
   "version": "1.0.0",
   "description": "This is Namaste React by Parthsaarthie ",
   "type": "module",
+  "source": "index.html",
+
   "scripts": {
     "start": "parcel index.html",
     "build": "parcel build index.html",
-    "test": "jest"
+    "test": "jest",
+    "watch-test": "jest --watch"
   },
+
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Paaaarth1909/Namaste_React.git"

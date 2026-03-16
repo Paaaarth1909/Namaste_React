@@ -1,23 +1,73 @@
 import { useEffect, useState } from "react";
+import { MENU_API } from "../utils/constants";
 
-const useRestaurantMenu = (resId: string | undefined) => {
-  const [resInfo, setResInfo] = useState<any>(null);
+export interface MenuItem {
+  id: string;
+  name: string;
+  price?: number;
+  defaultPrice?: number;
+  description?: string;
+  imageId?: string;
+}
+
+export interface MenuCard {
+  card: {
+    card: {
+      title?: string;
+      itemCards?: {
+        card: {
+          info: MenuItem;
+        };
+      }[];
+    };
+  };
+}
+
+interface RestaurantInfo {
+  id: string;
+  name: string;
+  cuisines: string[];
+  avgRating: number;
+  costForTwoMessage: string;
+  sla: {
+    deliveryTime: number;
+  };
+}
+
+const useRestaurantMenu = (resId?: string) => {
+  const [restaurantInfo, setRestaurantInfo] = useState<RestaurantInfo | null>(
+    null
+  );
+  const [menuCards, setMenuCards] = useState<MenuCard[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!resId) return;
+
     fetchMenu();
   }, [resId]);
 
   const fetchMenu = async () => {
-    const data = await fetch(
-      `https://foodfire.onrender.com/api/menu?page-type=REGULAR_MENU&complete-menu=true&lat=21.1702401&lng=72.83106070000001&submitAction=ENTER&restaurantId=${resId}`
-    );
+    try {
+      const data = await fetch(MENU_API + resId);
+      const json = await data.json();
 
-    const json = await data.json();
-    setResInfo(json.data);
+      const info = json?.data?.cards?.[2]?.card?.card?.info;
+
+      const menu =
+        json?.data?.cards
+          ?.find((c: any) => c?.groupedCard)
+          ?.groupedCard?.cardGroupMap?.REGULAR?.cards || [];
+
+      setRestaurantInfo(info);
+      setMenuCards(menu);
+      setLoading(false);
+    } catch (error) {
+      console.error("Menu API error:", error);
+    }
   };
 
-  return resInfo;
+  return { restaurantInfo, menuCards, loading };
 };
 
 export default useRestaurantMenu;

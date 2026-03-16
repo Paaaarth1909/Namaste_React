@@ -10,4 +10,4 @@ export const RESTAURANT_LIST_API =
 
 // Restaurant menu API (restaurantId will be appended)
 export const MENU_API =
-  "https://foodfire.onrender.com/api/menu?page-type=REGULAR_MENU&complete-menu=true&lat=21.1702401&lng=72.83106070000001&submitAction=ENTER&restaurantId=";
+  "https://thingproxy.freeboard.io/fetch/https://www.swiggy.com/dapi/menu/pl?page-type=REGULAR_MENU&complete-menu=true&lat=28.6917476&lng=77.3296634&restaurantId=";
